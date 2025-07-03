@@ -1,3 +1,22 @@
-{{ if and .IsPage (eq (.Param "mathjax") true) }}
-<script src="{{ .Param "mathjaxPath" | default "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.6/MathJax.js" }}{{ with .Param "mathjaxConfig" | default "TeX-AMS-MML_HTMLorMML" }}?config={{ . }}{{ end }}" async></script>
+{{ if or (eq (.Param "mathjax") true) (and .IsPage (eq .Site.Params.math.enable true)) }}
+<script src="{{ .Param "mathjaxPath" | default .Site.Params.math.mathjaxPath }}"></script>
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],  // 行内公式定界符
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],  // 块级公式定界符
+      processEscapes: true,  // 处理转义字符
+      tags: 'ams'  // 支持编号公式
+    },
+    svg: {
+      fontCache: 'global'
+    }
+  };
+</script>
+<script>
+  // 确保文档加载完成后触发 MathJax 渲染
+  document.addEventListener('DOMContentLoaded', function() {
+    if (window.MathJax) MathJax.typesetPromise();
+  });
+</script>
 {{ end }}
